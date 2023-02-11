@@ -97,7 +97,6 @@ fetch(dataJSON)
                                         <div class="detalle">
                                             <img class="afueraCarrito" id="${id}" src="assets/img/sumar_a_carrito.svg" alt="">
                                         </div>
-stock
                                         <div class="caracteristicas">
                                             <p class="tipo">${description}</p>
                                             <div class="barra"></div>

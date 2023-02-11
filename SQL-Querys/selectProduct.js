@@ -21,4 +21,9 @@ selectProduct = async (idProd) => {
     return prodFound;
 };
 
-module.exports = { selectProduct };
+async function selectProductII(){
+    const prodFound = await knex.from('products').select('*');
+    return prodFound;
+};
+
+module.exports = { selectProduct, selectProductII };

@@ -26,11 +26,12 @@ app.engine(
 );
 
 // const { selectProduct } = require('./SQL-Querys/selectProduct.js');
-// let product = selectProduct.select('ALL');
+// let product = selectProduct('ALL');
+
 let product = [];
 
-// const { selectMessage } = require('./Lite-Querys/selectMessages.js');
-// let chat = selectMessage.select('ALL');
+// const { selectMessages } = require('./Lite-Querys/selectMessages.js');
+// let chat = selectMessages('ALL');
 let chat = [];
 
 app.get('/', (req, res) => {
@@ -59,10 +60,9 @@ const { faker } = require('@faker-js/faker');
 
 faker.locale = 'en';
 
-// version array -------
 app.get('/api/products-test', (req, res) => {
     const { cant } = req.query;
-
+    
     const products = Array.from({ length: cant ?? 5 }).map(() => ({
         name: faker.name.firstName(),
         description: faker.commerce.product(),
@@ -70,10 +70,70 @@ app.get('/api/products-test', (req, res) => {
         photo: faker.image.cats(),
         stock: faker.datatype.number(),        
     })); 
-    res.json(products);
+    let dataHtml = `<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">name</th>
+                <th scope="col">description</th>
+                <th scope="col">price</th>
+                <th scope="col">photo</th>
+                <th scope="col">stock</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    let dataCierre = `</tbody>
+                    </table>
+                    </div>`
+
+    products.forEach(data => {
+        dataHtml +=`      
+                    <tr>
+                        <td>${data.name}</th>
+                        <td>${data.description}</td>
+                        <td>${data.price}</td>
+                        <td>${data.stock}</td>
+                        <td><img height="60p" src="${data.photo}" alt="${data.name}"></td>
+                    </tr>`
+    });
+    res.send(`${dataHtml}${dataCierre}`);
 });
 
 
+
+
+const { options } = require('./dbOptions/mariadb.js');
+const { selectProductII } = require('./SQL-Querys/selectProduct.js');
+const knex = require('knex')(options);
+
+selectProduct = async (idProd) => {
+    let prodFound = [];
+    if (idProd == 'ALL') {
+    await knex.from('products').select('*')
+    .then((rows) => {
+        prodFound = rows;
+    })
+    .catch((err) => { console.log(err); throw err })
+    .finally(() => { knex.destroy(); });
+    } else {
+        await knex.from('proucts').select('*').where('id_prod', '=', `${idProd}`)
+        .then((rows) => {
+            prodFound = rows;
+        })
+        .catch((err) => { console.log(err); throw err })
+        .finally(() => { knex.destroy(); });
+    }
+    return prodFound;
+};
+function A123(){
+    let result = "No hay resultado";
+        result = selectProductII()
+        .then()
+    return result;
+};
+
+console.log(A123());
 
 httpServer.listen(PORT, ()=>{
     console.log(`Server listening in port: ${PORT}`);
